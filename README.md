@@ -1,2 +1,2 @@
 # deep_learining_nikolenko
-Code examples from S.Nikolenko "Deep Learning" book
+Code examples from S.Nikolenko "Deep Learning" book on TensorFlow 2.0
