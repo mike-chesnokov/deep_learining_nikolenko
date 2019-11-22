@@ -62,7 +62,7 @@ def show_images(data,
     image_ids_num = len(image_ids)
     num_rows = int(np.ceil(image_ids_num/num_cols))
     
-    fig, ax = plt.subplots(figsize=(2 * num_cols, 2 * num_rows), ncols=num_cols, nrows=num_rows)
+    fig, ax = plt.subplots(figsize=(3 * num_cols, 3 * num_rows), ncols=num_cols, nrows=num_rows)
     for ind, img_id in enumerate(image_ids):
         img = data[img_id]
         
