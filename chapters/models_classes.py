@@ -46,4 +46,67 @@ class HidLayerModel(Model):
         h_drop = tf.nn.dropout(hidden_layer, self.p_keep)
         
         return tf.matmul(h_drop, self.W_logit) + self.b_logit
+
+
+class BNModel1(Model):
+    """
+    Model for Chapter 4.3 (with batch normalization)
+    """
+    def __init__(self, input_size=784, fc1_size=100, bn_size=100, fc2_size=100, fc3_size=10):
+        super(BNModel1, self).__init__()
+        
+        self.W_1 = tf.Variable(tf.random.truncated_normal([input_size, fc1_size], stddev=0.1))
+        self.b_1 = tf.Variable(tf.random.truncated_normal([fc1_size], stddev=0.1))
+        
+        self.beta = tf.Variable(tf.zeros([bn_size]))
+        self.scale = tf.Variable(tf.ones([bn_size]))
+        
+        self.W_2 = tf.Variable(tf.random.truncated_normal([bn_size, fc2_size], stddev=0.1))
+        self.b_2 = tf.Variable(tf.random.truncated_normal([fc2_size], stddev=0.1))       
+        
+        self.W_3 = tf.Variable(tf.random.truncated_normal([fc2_size, fc3_size], stddev=0.1))
+        self.b_3 = tf.Variable(tf.random.truncated_normal([fc3_size], stddev=0.1))  
+        
+    def __call__(self, X):
+        # input layer
+        h1 = tf.nn.tanh(tf.matmul(X, self.W_1) + self.b_1)
+        
+        # batch norm layer
+        batch_mean, batch_var = tf.nn.moments(h1, [0])
+        h1_bn = tf.nn.batch_normalization(h1, batch_mean, batch_var, self.beta, self.scale, 0.001)
+        
+        # hidden layer
+        h2 = tf.nn.tanh(tf.matmul(h1_bn, self.W_2) + self.b_2)
+        
+        # output layer
+        return tf.nn.tanh(tf.matmul(h2, self.W_3) + self.b_3)
+        #return tf.matmul(h2, self.W_3) + self.b_3
+
+
+class BNModel2(Model):
+    """
+    Model for Chapter 4.3 (without batch normalization)
+    """
+    def __init__(self, input_size=784, fc1_size=100, fc2_size=100, fc3_size=10):
+        super(BNModel2, self).__init__()
+        
+        self.W_1 = tf.Variable(tf.random.truncated_normal([input_size, fc1_size], stddev=0.1))
+        self.b_1 = tf.Variable(tf.random.truncated_normal([fc1_size], stddev=0.1))
+        
+        self.W_2 = tf.Variable(tf.random.truncated_normal([fc1_size, fc2_size], stddev=0.1))
+        self.b_2 = tf.Variable(tf.random.truncated_normal([fc2_size], stddev=0.1))       
+        
+        self.W_3 = tf.Variable(tf.random.truncated_normal([fc2_size, fc3_size], stddev=0.1))
+        self.b_3 = tf.Variable(tf.random.truncated_normal([fc3_size], stddev=0.1))  
+        
+    def __call__(self, X):
+        # input layer
+        h1 = tf.nn.tanh(tf.matmul(X, self.W_1) + self.b_1)
+                
+        # hidden layer
+        h2 = tf.nn.tanh(tf.matmul(h1, self.W_2) + self.b_2)
+        
+        # output layer
+        return tf.nn.tanh(tf.matmul(h2, self.W_3) + self.b_3)
+        #return tf.matmul(h2, self.W_3) + self.b_3
     

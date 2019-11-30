@@ -31,6 +31,7 @@ def plot_metric_history(metric_history, title='Loss', xlabel='Epoch', ylabel='Lo
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.legend()
+    plt.grid(which='both', alpha=0.3, ls='--')
     plt.show()
     
 
