@@ -6,6 +6,7 @@ Code examples from S.Nikolenko "Deep Learning" book using **TensorFlow 2.0** (or
 - Chapter 3.6: Fully Connected NN
 - Chapter 4.2: Weights Initialization
 - Chapter 4.3: Batch Normalization 
+- Chapter 4.5: Gradient Descent
 
 ## Other repositories of this book
 With book's examples on TensorFlow 1.x:
