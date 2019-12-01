@@ -110,3 +110,136 @@ class BNModel2(Model):
         return tf.nn.tanh(tf.matmul(h2, self.W_3) + self.b_3)
         #return tf.matmul(h2, self.W_3) + self.b_3
     
+
+class SimpleModel(Model):
+    """
+    Model for Chapter 4.5 (simple model)
+    """
+    __name__ = 'SimpleModel'
+    
+    def __init__(self, input_size=784, fc1_size=300, fc2_size=100, fc3_size=10):
+        super(SimpleModel, self).__init__()
+        
+        self.W_1 = tf.Variable(tf.random.truncated_normal([input_size, fc1_size], stddev=0.1))
+        self.b_1 = tf.Variable(tf.random.truncated_normal([fc1_size], stddev=0.1))
+        
+        self.W_2 = tf.Variable(tf.random.truncated_normal([fc1_size, fc2_size], stddev=0.1))
+        self.b_2 = tf.Variable(tf.random.truncated_normal([fc2_size], stddev=0.1))       
+        
+        self.W_3 = tf.Variable(tf.random.truncated_normal([fc2_size, fc3_size], stddev=0.1))
+        self.b_3 = tf.Variable(tf.random.truncated_normal([fc3_size], stddev=0.1))  
+        
+    def __call__(self, X):
+        # input layer
+        h1 = tf.nn.relu(tf.matmul(X, self.W_1) + self.b_1)
+
+        # hidden layer
+        h2 = tf.nn.relu(tf.matmul(h1, self.W_2) + self.b_2)
+        
+        # output layer
+        return tf.nn.relu(tf.matmul(h2, self.W_3) + self.b_3)
+    
+
+class BNModel(Model):
+    """
+    Model for Chapter 4.5 (model with Batch Normalization layer)
+    """
+    __name__ = 'BNModel'
+    
+    def __init__(self, input_size=784, fc1_size=300, fc2_size=100, fc3_size=10):
+        super(BNModel, self).__init__()
+        
+        self.W_1 = tf.Variable(tf.random.truncated_normal([input_size, fc1_size], stddev=0.1))
+        self.b_1 = tf.Variable(tf.random.truncated_normal([fc1_size], stddev=0.1))
+        
+        self.beta = tf.Variable(tf.zeros([fc1_size]))
+        self.scale = tf.Variable(tf.ones([fc1_size]))
+        
+        self.W_2 = tf.Variable(tf.random.truncated_normal([fc1_size, fc2_size], stddev=0.1))
+        self.b_2 = tf.Variable(tf.random.truncated_normal([fc2_size], stddev=0.1))       
+        
+        self.W_3 = tf.Variable(tf.random.truncated_normal([fc2_size, fc3_size], stddev=0.1))
+        self.b_3 = tf.Variable(tf.random.truncated_normal([fc3_size], stddev=0.1))  
+        
+    def __call__(self, X):
+        # input layer
+        h1 = tf.nn.relu(tf.matmul(X, self.W_1) + self.b_1)
+        
+        # batch norm layer
+        batch_mean, batch_var = tf.nn.moments(h1, [0])
+        h1_bn = tf.nn.batch_normalization(h1, batch_mean, batch_var, self.beta, self.scale, 0.001)
+        
+        # hidden layer
+        h2 = tf.nn.relu(tf.matmul(h1_bn, self.W_2) + self.b_2)
+        
+        # output layer
+        return tf.nn.relu(tf.matmul(h2, self.W_3) + self.b_3)
+    
+
+class XavierModel(Model):
+    """
+    Model for Chapter 4.5 (model with Xavier init)
+    """
+    __name__ = 'XavierModel'
+        
+    def __init__(self, input_size=784, fc1_size=300, fc2_size=100, fc3_size=10):
+        super(XavierModel, self).__init__()
+        
+        initializer = tf.initializers.GlorotUniform()
+        
+        self.W_1 = tf.Variable(initializer(shape=(input_size, fc1_size)))
+        self.b_1 = tf.Variable(initializer(shape=(fc1_size,)))
+        
+        self.W_2 = tf.Variable(initializer(shape=(fc1_size, fc2_size)))
+        self.b_2 = tf.Variable(initializer(shape=(fc2_size,)))       
+        
+        self.W_3 = tf.Variable(initializer(shape=(fc2_size, fc3_size)))
+        self.b_3 = tf.Variable(initializer(shape=(fc3_size,)))  
+        
+    def __call__(self, X):
+        # input layer
+        h1 = tf.nn.relu(tf.matmul(X, self.W_1) + self.b_1)
+        
+        # hidden layer
+        h2 = tf.nn.relu(tf.matmul(h1, self.W_2) + self.b_2)
+        
+        # output layer
+        return tf.nn.relu(tf.matmul(h2, self.W_3) + self.b_3)
+    
+
+class XavierBNModel(Model):
+    """
+    Model for Chapter 4.5 (model with Batch Normalization layer and Xavier initialization)
+    """
+    __name__ = 'XavierBNModel'
+    
+    def __init__(self, input_size=784, fc1_size=300, fc2_size=100, fc3_size=10):
+        super(XavierBNModel, self).__init__()
+        
+        initializer = tf.initializers.GlorotUniform()
+        
+        self.W_1 = tf.Variable(initializer(shape=(input_size, fc1_size)))
+        self.b_1 = tf.Variable(initializer(shape=(fc1_size,)))
+        
+        self.beta = tf.Variable(tf.zeros([fc1_size]))
+        self.scale = tf.Variable(tf.ones([fc1_size]))
+        
+        self.W_2 = tf.Variable(initializer(shape=(fc1_size, fc2_size)))
+        self.b_2 = tf.Variable(initializer(shape=(fc2_size,)))       
+        
+        self.W_3 = tf.Variable(initializer(shape=(fc2_size, fc3_size)))
+        self.b_3 = tf.Variable(initializer(shape=(fc3_size,)))  
+        
+    def __call__(self, X):
+        # input layer
+        h1 = tf.nn.relu(tf.matmul(X, self.W_1) + self.b_1)
+        
+        # batch norm layer
+        batch_mean, batch_var = tf.nn.moments(h1, [0])
+        h1_bn = tf.nn.batch_normalization(h1, batch_mean, batch_var, self.beta, self.scale, 0.001)
+        
+        # hidden layer
+        h2 = tf.nn.relu(tf.matmul(h1_bn, self.W_2) + self.b_2)
+        
+        # output layer
+        return tf.nn.relu(tf.matmul(h2, self.W_3) + self.b_3)
